@@ -1,41 +1,34 @@
 pipeline {
     agent any
-    triggers {
-        cron('H/ * * * *')
-    }
     stages {
-        stage ('Erstellung der ersten Datei') {
+        stage('One') {
             steps {
-                script {
-                    echo 'Die erste Datei wird erstellt'
-                    writeFile file: 'dokument1.txt', text: 'Hier ist die erste Dokument'
-                    echo 'Der Inhalt der ersten Datei'
-                    sh 'cat dokument1.txt'
-                }
+                echo 'Hi from GitHub'
             }
         }
-        stage ('Erstellung der zweiten Datei') {
+        stage('Two'){
             steps {
-                script {
-                    echo 'Die zweite Datei wird erstellt'
-                    writeFile file: 'dokument2.txt', text: 'Hier ist die zweiten Datei'
-                    echo 'Der Inhalt der zweiten Datei'
-                    sh 'cat dokument2.txt'
-                }
+                input message: 'Do you want to proceed', ok: 'Yes'
             }
         }
-        stage ('Hinzufügen von Text'){
+        stage('Three') {
             steps {
-                script {
-                    sh 'echo -n "Zusätzlicher Inhalt zu der ersten Dokument ${BUILD_NUMBER}" >> dokument1.txt'
-                    sh 'echo -n "Zusätzlicher Inhalt zu der zweiten Dokument ${BUILD_NUMBER}" >> dokument2.txt'
-                }
+                echo 'Hello from here'
             }
         }
-    }
-    post {
-        always {
-            archiveArtifacts 'dokument1.txt, dokument2.txt'
+        stage('Four') {
+            parallel {
+                stage('Unit Test') {
+                    steps {
+                        echo 'Running the unit Test...'
+                    }
+                }
+                stage('Integration test') {
+                    steps {
+                        echo 'Running the integration test...'
+                    }
+                }
+            }
         }
     }
 }
